@@ -13,8 +13,6 @@
  **************************************************************************** */
 #include "drv_rtc.h"
 
-#if CONFIG_DRV_RTC_USE
-
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -23,9 +21,15 @@
 
 #include "esp_log.h"
 
-#include "drv_time_if.h"
-#include "drv_ht1302_if.h"
-#include "drv_mcp7941x_if.h"
+#include "drv_time.h"
+
+#if CONFIG_DRV_HT1302_USE
+#include "drv_ht1302.h"
+#endif
+
+#if CONFIG_DRV_MCP7941X_USE
+#include "drv_mcp7941x.h"
+#endif
 
 /* *****************************************************************************
  * Configuration Definitions
@@ -35,13 +39,6 @@
 /* *****************************************************************************
  * Constants and Macros Definitions
  **************************************************************************** */
-#if CONFIG_USE_HT1302_RTC
-#define LOCAL_USE_HT1302      1
-#endif
-#define LOCAL_USE_MCP7941X    0           //??? DS3231
-
-
-
 
 
 /* *****************************************************************************
@@ -182,9 +179,9 @@ void drv_rtc_get_timestamp_from_time(struct tm* s_time, drv_time_stamp_t* time_s
 bool drv_rtc_write(struct tm* p_tm)
 {
     drv_rtc_get_timestamp_from_time(p_tm, &rtc_time_stamp_wr);
-    #if LOCAL_USE_MCP7941X
+    #if CONFIG_DRV_MCP7941X_USE
     return drv_mcp7941x_write_time(&rtc_time_stamp_wr);
-    #elif LOCAL_USE_HT1302
+    #elif CONFIG_DRV_HT1302_USE
     return drv_ht1302_write_time(&rtc_time_stamp_wr);
     #else
     return false;
@@ -202,9 +199,9 @@ struct tm* drv_rtc_read(void)
 {
     memset(&rtc_time_stamp_rd, 0, sizeof(rtc_time_stamp_rd));
 
-    #if LOCAL_USE_MCP7941X
+    #if CONFIG_DRV_MCP7941X_USE
     drv_mcp7941x_read_time(&rtc_time_stamp_rd);
-    #elif LOCAL_USE_HT1302
+    #elif CONFIG_DRV_HT1302_USE
     drv_ht1302_read_time(&rtc_time_stamp_rd);
     #else
     /* use default NULL data */
@@ -239,5 +236,3 @@ void drv_rtc_time_print(void)
     localtime_r(&now_time, &rtc_time_info);  //strftime - exception if not used localtime_r
     ESP_LOGI(TAG, "Read Time from RTC: %s", asctime(&rtc_time_info)); //asctime - exception if not used localtime_r
 }
-
-#endif //#if CONFIG_DRV_RTC_USE

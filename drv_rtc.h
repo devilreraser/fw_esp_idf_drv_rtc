@@ -14,9 +14,6 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#include <sdkconfig.h>
-#if CONFIG_DRV_RTC_USE
-
 /* *****************************************************************************
  * Header Includes
  **************************************************************************** */
@@ -54,8 +51,6 @@ extern "C"
 time_t drv_rtc_time_rd(void);
 bool drv_rtc_time_wr(time_t new_time);
 void drv_rtc_time_print(void);
-
-#endif //#if CONFIG_DRV_RTC_USE
 
 #ifdef __cplusplus
 }
