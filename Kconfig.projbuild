@@ -1,0 +1,7 @@
+menu "Component drv_rtc Configuration"
+
+    config DRV_RTC_USE
+        bool "Use drv_rtc"
+        default y
+
+endmenu
